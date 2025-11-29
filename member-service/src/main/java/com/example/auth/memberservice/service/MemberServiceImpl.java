@@ -9,8 +9,11 @@ import com.example.auth.memberservice.constant.Role;
 import com.example.auth.memberservice.model.Member;
 import com.example.auth.memberservice.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
@@ -51,14 +54,16 @@ public class MemberServiceImpl implements MemberService {
     );
   }
 
+  @Override
+  @Transactional(readOnly = true)
+  public Page<MemberRegisterResponse> getAllUsers(Pageable pageable) {
+    return memberRepository.findAll(pageable)
+            .map(member -> new MemberRegisterResponse(
+                    member.getId(),
+                    member.getEmail()
+            ));
+  }
 
-  /**
-   * Authenticate a member with given email and password.
-   *
-   * @param request the object containing email and password
-   * @return LoginResponse containing member's id, email, and role
-   * @throws BusinessException if email is not found or password is invalid
-   */
   @Override
   public LoginResponse login(LoginRequest request) {
     Member member = memberRepository.findByEmail(request.email().toLowerCase())
