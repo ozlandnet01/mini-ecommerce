@@ -13,6 +13,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Settham"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Settham/training-project-2025-11.git",
+    "accountId": "3e0c62e4-6cc0-48dc-ae68-3876f8cc4265"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -27,6 +39,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/agathasettham/Desktop/code/bilbil/training-project-2025-11/member-service",
     "node.js.detected.package.eslint": "true",
@@ -76,7 +89,7 @@
       <option name="presentableId" value="Default" />
       <updated>1764409234417</updated>
       <workItem from="1764409235491" duration="1225000" />
-      <workItem from="1764410475220" duration="2253000" />
+      <workItem from="1764410475220" duration="2554000" />
     </task>
     <servers />
   </component>
