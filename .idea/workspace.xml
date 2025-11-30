@@ -4,26 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a5e38f40-cc59-45a0-b648-684d871e56c5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/ApiGatewayApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/config/GlobalExceptionHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/config/RestClientConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/config/SecurityConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/controller/AuthGatewayController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/controller/MemberGatewayController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/dto/LoginRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/security/UserPrincipal.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/util/JwtAuthenticationFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/util/JwtUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api-gateway/src/main/resources/application.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/member-service/src/main/java/com/example/auth/memberservice/controller/MemberController.java" afterDir="false" />
+    <list default="true" id="a5e38f40-cc59-45a0-b648-684d871e56c5" name="Changes" comment="user id interceptor">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/member-service/src/main/java/com/example/auth/memberservice/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/member-service/src/main/java/com/example/auth/memberservice/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/member-service/src/main/java/com/example/auth/memberservice/service/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/member-service/src/main/java/com/example/auth/memberservice/service/MemberService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/member-service/src/main/java/com/example/auth/memberservice/service/MemberServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/member-service/src/main/java/com/example/auth/memberservice/service/MemberServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/member-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/member-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/config/RestClientConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/config/RestClientConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/controller/AuthGatewayController.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/controller/AuthGatewayController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/util/JwtUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/util/JwtUtil.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -172,12 +157,34 @@
       <updated>1764409234417</updated>
       <workItem from="1764409235491" duration="1225000" />
       <workItem from="1764410475220" duration="3910000" />
-      <workItem from="1764414589059" duration="6826000" />
+      <workItem from="1764414589059" duration="8755000" />
     </task>
+    <task id="LOCAL-00001" summary="set api gateway extract user_id">
+      <option name="closed" value="true" />
+      <created>1764421523651</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1764421523651</updated>
+    </task>
+    <task id="LOCAL-00002" summary="user id interceptor">
+      <option name="closed" value="true" />
+      <created>1764421563190</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1764421563190</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="set api gateway extract user_id" />
+    <MESSAGE value="user id interceptor" />
+    <option name="LAST_COMMIT_MESSAGE" value="user id interceptor" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -196,6 +203,11 @@
           <url>file://$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/util/JwtUtil.java</url>
           <line>29</line>
           <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/api-gateway/src/main/java/com/example/apigateway/util/JwtAuthenticationFilter.java</url>
+          <line>40</line>
+          <option name="timeStamp" value="12" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
