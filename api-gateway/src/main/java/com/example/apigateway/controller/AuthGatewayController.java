@@ -51,7 +51,6 @@ public class AuthGatewayController {
       @RequestBody RegisterRequest request) {
     String url = memberServiceBaseUrl + "/api/auth/register";
 
-    // Convert DTO to Map for RestTemplate
     Map<String, Object> body = new HashMap<>();
     body.put("email", request.getEmail());
     body.put("password", request.getPassword());
@@ -81,7 +80,6 @@ public class AuthGatewayController {
     String url = memberServiceBaseUrl + "/api/auth/login";
     Map<String, Object> responseBody = new HashMap<>();
 
-    // Convert DTO to Map for RestTemplate
     Map<String, Object> body = new HashMap<>();
     body.put("email", request.getEmail());
     body.put("password", request.getPassword());

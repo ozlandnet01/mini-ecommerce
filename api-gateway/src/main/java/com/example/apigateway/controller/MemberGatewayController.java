@@ -13,6 +13,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -30,11 +32,16 @@ public class MemberGatewayController {
     this.restTemplate = restTemplate;
   }
 
-  @GetMapping("/test")
-  public ResponseEntity<?> test(@AuthenticationPrincipal UserPrincipal principal) {
+  @GetMapping("/currentUser")
+  @Operation(summary = "Get current user", description = "Returns the current authenticated user ID", security = @SecurityRequirement(name = "Bearer Authentication"))
+  public ResponseEntity<Map<String, String>> currentUser(@AuthenticationPrincipal UserPrincipal principal) {
     String userId = principal.getUserId();
     log.info("User ID: {}", userId);
-    return ResponseEntity.ok().build();
+
+    Map<String, String> response = new HashMap<>();
+    response.put("userId", userId);
+
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/users")
