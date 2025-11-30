@@ -12,11 +12,6 @@ public interface MemberService {
   MemberRegisterResponse register(MemberRegisterRequest request);
 
   LoginResponse login(LoginRequest request);
-  
-  /**
-   * Get all members with pagination
-   * @param pageable pagination information (page number, page size, etc.)
-   * @return Page of MemberRegisterResponse
-   */
+
   Page<MemberRegisterResponse> getAllUsers(Pageable pageable);
 }

@@ -24,13 +24,6 @@ public class MemberServiceImpl implements MemberService {
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder;
 
-  /**
-   * Register a new member with given email and password.
-   *
-   * @param request the object containing email and password
-   * @return MemberRegisterResponse containing member's id, email, and role
-   * @throws BusinessException if email is not found or password is invalid
-   */
   @Override
   public MemberRegisterResponse register(MemberRegisterRequest request) {
 

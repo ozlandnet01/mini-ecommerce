@@ -29,6 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         return path.startsWith("/auth/")
                 || path.startsWith("/api/auth")
+                || path.startsWith("/product/")
                 || path.startsWith("/swagger-ui")
                 || path.startsWith("/v3/api-docs")
                 || path.equals("/swagger-ui.html");
@@ -36,8 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+            HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -61,8 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 principal,
                 null,
-                principal.getAuthorities()
-        );
+                principal.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

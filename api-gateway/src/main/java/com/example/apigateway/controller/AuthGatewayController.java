@@ -45,7 +45,8 @@ public class AuthGatewayController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "User successfully registered", content = @Content(mediaType = "application/json")),
       @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content(mediaType = "application/json")),
-      @ApiResponse(responseCode = "409", description = "User already exists", content = @Content(mediaType = "application/json"))
+      @ApiResponse(responseCode = "409", description = "User already exists", content = @Content(mediaType = "application/json")),
+      @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
   })
   public ResponseEntity<?> register(
       @RequestBody RegisterRequest request) {
@@ -71,8 +72,9 @@ public class AuthGatewayController {
   @Operation(summary = "Login user", description = "Authenticates a user and returns a JWT token", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(examples = @ExampleObject(name = "Login Request", value = "{\"email\": \"string\", \"password\": \"string\"}"))))
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Login successful", content = @Content(mediaType = "application/json")),
+      @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content(mediaType = "application/json")),
       @ApiResponse(responseCode = "401", description = "Invalid credentials", content = @Content(mediaType = "application/json")),
-      @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content(mediaType = "application/json"))
+      @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
   })
   public ResponseEntity<?> login(
       @RequestBody LoginRequest request) {
