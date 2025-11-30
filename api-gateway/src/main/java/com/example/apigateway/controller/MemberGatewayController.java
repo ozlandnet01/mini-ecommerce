@@ -1,6 +1,9 @@
 package com.example.apigateway.controller;
 
 import com.example.apigateway.security.UserPrincipal;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +17,12 @@ import java.net.URI;
 @Slf4j
 @RestController
 @RequestMapping("/member")
+@Tag(name = "Member", description = "Member management endpoints")
+@SecurityRequirement(name = "Bearer Authentication")
 public class MemberGatewayController {
 
   private final RestTemplate restTemplate;
-  
+
   @Value("${member.service.base-url}")
   private String memberServiceUrl;
 
@@ -33,17 +38,18 @@ public class MemberGatewayController {
   }
 
   @GetMapping("/users")
+  @Operation(summary = "Get all users", description = "Retrieves a paginated list of all users. Requires authentication.", security = @SecurityRequirement(name = "Bearer Authentication"))
   public ResponseEntity<?> getUsers(
-          @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "10") int size) {
-    
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+
     URI uri = UriComponentsBuilder
-            .fromUriString(memberServiceUrl)
-            .path("/api/member/users")
-            .queryParam("page", page)
-            .queryParam("size", size)
-            .build()
-            .toUri();
+        .fromUriString(memberServiceUrl)
+        .path("/api/member/users")
+        .queryParam("page", page)
+        .queryParam("size", size)
+        .build()
+        .toUri();
 
     return restTemplate.getForEntity(uri, Object.class);
   }
