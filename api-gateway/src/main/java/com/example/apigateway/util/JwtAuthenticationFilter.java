@@ -13,55 +13,59 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  private final JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-  public JwtAuthenticationFilter(JwtUtil jwtUtil) {
-    this.jwtUtil = jwtUtil;
-  }
-
-  @Override
-  protected boolean shouldNotFilter(HttpServletRequest request) {
-    String path = request.getRequestURI();
-    return path.startsWith("/auth/");
-  }
-
-  @Override
-  protected void doFilterInternal(HttpServletRequest request,
-                                  HttpServletResponse response,
-                                  FilterChain filterChain)
-          throws ServletException, IOException {
-
-    String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-      response.setStatus(HttpStatus.UNAUTHORIZED.value());
-      return;
+    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
     }
 
-    String token = authHeader.substring(7);
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
 
-    if (!jwtUtil.validate(token)) {
-      response.setStatus(HttpStatus.UNAUTHORIZED.value());
-      return;
+        return path.startsWith("/auth/")
+                || path.startsWith("/api/auth")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.equals("/swagger-ui.html");
     }
 
-    String userId = jwtUtil.extractUserId(token);
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
-    UserPrincipal principal = new UserPrincipal(userId);
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-            principal,
-            null,
-            principal.getAuthorities()
-    );
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return;
+        }
 
-    SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = authHeader.substring(7);
 
-    filterChain.doFilter(request, response);
-  }
+        if (!jwtUtil.validate(token)) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return;
+        }
+
+        String userId = jwtUtil.extractUserId(token);
+
+        UserPrincipal principal = new UserPrincipal(userId);
+
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                principal,
+                null,
+                principal.getAuthorities()
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        filterChain.doFilter(request, response);
+    }
 }
