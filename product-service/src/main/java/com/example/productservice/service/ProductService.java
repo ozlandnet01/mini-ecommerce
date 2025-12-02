@@ -10,5 +10,5 @@ public interface ProductService {
 
     Page<GetProductResponse> searchProducts(String productName, Pageable pageable);
 
-    GetProductResponse getProductDetail(String productName);
+    GetProductResponse getProductDetail(String id);
 }

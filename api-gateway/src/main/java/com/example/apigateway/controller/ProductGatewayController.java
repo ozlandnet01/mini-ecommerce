@@ -92,7 +92,7 @@ public class ProductGatewayController {
         return restTemplate.getForEntity(uri, Object.class);
     }
 
-    @GetMapping("/product-detail/{productName}")
+    @GetMapping("/product-detail/{id}")
     @Operation(
             summary = "Get product detail",
             description = "Retrieves the detailed information of a specific product based on its product name. No authentication required."
@@ -102,11 +102,11 @@ public class ProductGatewayController {
             @ApiResponse(responseCode = "503", description = "Product service unavailable", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
     })
-    public ResponseEntity<?> getProductDetail(@PathVariable String productName) {
+    public ResponseEntity<?> getProductDetail(@PathVariable String id) {
         URI uri = UriComponentsBuilder
                 .fromUriString(productServiceUrl)
-                .path("/api/product/product-detail/{productName}")
-                .buildAndExpand(productName)
+                .path("/api/product/product-detail/{id}")
+                .buildAndExpand(id)
                 .toUri();
         return restTemplate.getForEntity(uri, Object.class);
     }

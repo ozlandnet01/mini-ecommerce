@@ -41,8 +41,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public GetProductResponse getProductDetail(String productName) {
-        return productRepository.findByName(productName)
+    public GetProductResponse getProductDetail(String id) {
+        return productRepository.findById(id)
                 .map(product -> new GetProductResponse(
                         product.getId(),
                         product.getName(),
@@ -50,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
                         product.getCategory().name(),
                         product.getPrice()))
                 .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Product not found with name: " + productName
+                        HttpStatus.NOT_FOUND, "Product not found with id: " + id
                 ));
     }
 }

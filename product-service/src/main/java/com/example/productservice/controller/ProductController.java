@@ -35,9 +35,9 @@ public class ProductController {
         return ResponseEntity.ok(productService.searchProducts(productName, pageable));
     }
 
-    @GetMapping("/product-detail/{productName}")
+    @GetMapping("/product-detail/{id}")
     public ResponseEntity<GetProductResponse> getProductDetail(
-            @PathVariable String productName) {
-        return ResponseEntity.ok(productService.getProductDetail(productName));
+            @PathVariable String id) {
+        return ResponseEntity.ok(productService.getProductDetail(id));
     }
 }
