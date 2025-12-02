@@ -22,8 +22,7 @@ public class ProductController {
     public ResponseEntity<Page<GetProductResponse>> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(productService.getAllProducts(pageable));
+        return ResponseEntity.ok(productService.getAllProducts(PageRequest.of(page, size)));
     }
 
     @GetMapping("/search")
@@ -31,13 +30,11 @@ public class ProductController {
             @RequestParam String productName,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(productService.searchProducts(productName, pageable));
+        return ResponseEntity.ok(productService.searchProducts(productName, PageRequest.of(page, size)));
     }
 
     @GetMapping("/product-detail/{id}")
-    public ResponseEntity<GetProductResponse> getProductDetail(
-            @PathVariable String id) {
+    public ResponseEntity<GetProductResponse> getProductDetail(@PathVariable String id) {
         return ResponseEntity.ok(productService.getProductDetail(id));
     }
 }

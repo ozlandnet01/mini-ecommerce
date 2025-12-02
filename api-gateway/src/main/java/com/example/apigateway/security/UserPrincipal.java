@@ -1,4 +1,3 @@
-// src/main/java/com/example/apigateway/security/UserPrincipal.java
 package com.example.apigateway.security;
 
 import org.springframework.security.core.GrantedAuthority;

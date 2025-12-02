@@ -21,54 +21,51 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
-  private final MemberRepository memberRepository;
-  private final PasswordEncoder passwordEncoder;
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
-  @Override
-  public MemberRegisterResponse register(MemberRegisterRequest request) {
+    @Override
+    public MemberRegisterResponse register(MemberRegisterRequest request) {
+        String email = request.email().toLowerCase();
 
-    if (memberRepository.existsByEmail(request.email().toLowerCase())) {
-      throw new BusinessException("EMAIL_ALREADY_USED", "Email already registered");
+        if (memberRepository.existsByEmail(email)) {
+            throw new BusinessException("EMAIL_ALREADY_USED", "Email already registered");
+        }
+
+        Member member = Member.builder()
+                .email(email)
+                .passwordHash(passwordEncoder.encode(request.password()))
+                .role(Role.CUSTOMER.name())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .build();
+
+        Member saved = memberRepository.save(member);
+
+        return new MemberRegisterResponse(saved.getId(), saved.getEmail());
     }
 
-    Member member = Member.builder()
-            .email(request.email().toLowerCase())
-            .passwordHash(passwordEncoder.encode(request.password()))
-            .role(Role.CUSTOMER.name())
-            .createdAt(Instant.now())
-            .updatedAt(Instant.now())
-            .build();
-
-    Member saved = memberRepository.save(member);
-
-    return new MemberRegisterResponse(
-            saved.getId(),
-            saved.getEmail()
-    );
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public Page<MemberRegisterResponse> getAllUsers(Pageable pageable) {
-    return memberRepository.findAll(pageable)
-            .map(member -> new MemberRegisterResponse(
-                    member.getId(),
-                    member.getEmail()
-            ));
-  }
-
-  @Override
-  public LoginResponse login(LoginRequest request) {
-    Member member = memberRepository.findByEmail(request.email().toLowerCase())
-            .orElseThrow(() -> new BusinessException("INVALID_CREDENTIALS", "Invalid email or password"));
-
-    if (!passwordEncoder.matches(request.password(), member.getPasswordHash())) {
-      throw new BusinessException("INVALID_CREDENTIALS", "Invalid email or password");
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MemberRegisterResponse> getAllUsers(Pageable pageable) {
+        return memberRepository.findAll(pageable)
+                .map(member -> new MemberRegisterResponse(member.getId(), member.getEmail()));
     }
 
-    member.setUpdatedAt(Instant.now());
-    memberRepository.save(member);
+    @Override
+    public LoginResponse login(LoginRequest request) {
+        String email = request.email().toLowerCase();
 
-    return LoginResponse.fromMember(member);
-  }
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException("INVALID_CREDENTIALS", "Invalid email or password"));
+
+        if (!passwordEncoder.matches(request.password(), member.getPasswordHash())) {
+            throw new BusinessException("INVALID_CREDENTIALS", "Invalid email or password");
+        }
+
+        member.setUpdatedAt(Instant.now());
+        memberRepository.save(member);
+
+        return LoginResponse.fromMember(member);
+    }
 }

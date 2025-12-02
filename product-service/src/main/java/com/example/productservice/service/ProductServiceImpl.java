@@ -1,6 +1,7 @@
 package com.example.productservice.service;
 
 import com.example.productservice.dto.GetProductResponse;
+import com.example.productservice.model.Product;
 import com.example.productservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,37 +21,32 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public Page<GetProductResponse> getAllProducts(Pageable pageable) {
         return productRepository.findAll(pageable)
-                .map(product -> new GetProductResponse(
-                        product.getId(),
-                        product.getName(),
-                        product.getDescription(),
-                        product.getCategory().name(),
-                        product.getPrice()));
+                .map(this::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<GetProductResponse> searchProducts(String productName, Pageable pageable) {
         return productRepository.findByNameContainingIgnoreCase(productName, pageable)
-                .map(product -> new GetProductResponse(
-                        product.getId(),
-                        product.getName(),
-                        product.getDescription(),
-                        product.getCategory().name(),
-                        product.getPrice()));
+                .map(this::toResponse);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public GetProductResponse getProductDetail(String id) {
         return productRepository.findById(id)
-                .map(product -> new GetProductResponse(
-                        product.getId(),
-                        product.getName(),
-                        product.getDescription(),
-                        product.getCategory().name(),
-                        product.getPrice()))
+                .map(this::toResponse)
                 .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Product not found with id: " + id
-                ));
+                        HttpStatus.NOT_FOUND, "Product not found with id: " + id));
+    }
+
+    private GetProductResponse toResponse(Product product) {
+        return new GetProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getCategory().name(),
+                product.getPrice()
+        );
     }
 }

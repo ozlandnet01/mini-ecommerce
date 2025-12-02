@@ -22,25 +22,23 @@ public class CartServiceImpl implements CartService {
     @Override
     public AddToCartResponse addToCart(String memberId, AddToCartRequest request) {
 
-        Cart saved;
-        Optional<Cart> existing = cartRepository
-                .findByMemberIdAndProductId(memberId, request.productId());
+        Cart cart = cartRepository
+                .findByMemberIdAndProductId(memberId, request.productId())
+                .map(existing -> {
+                    existing.setQty(request.qty());
+                    existing.setUpdatedAt(Instant.now());
+                    return existing;
+                })
+                .orElseGet(() -> Cart.builder()
+                        .memberId(memberId)
+                        .productId(request.productId())
+                        .qty(request.qty())
+                        .createdAt(Instant.now())
+                        .updatedAt(Instant.now())
+                        .build()
+                );
 
-        if (existing.isPresent()) {
-            Cart cart = existing.get();
-            cart.setQty(request.qty());
-            cart.setUpdatedAt(Instant.now());
-            saved = cartRepository.save(cart);
-        } else {
-            Cart newCart = Cart.builder()
-                    .memberId(memberId)
-                    .productId(request.productId())
-                    .qty(request.qty())
-                    .createdAt(Instant.now())
-                    .updatedAt(Instant.now())
-                    .build();
-            saved = cartRepository.save(newCart);
-        }
+        Cart saved = cartRepository.save(cart);
 
         return new AddToCartResponse(
                 saved.getId(),
@@ -63,10 +61,9 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public boolean deleteFromCart(String id) {
-        if (cartRepository.existsById(id)) {
-            cartRepository.deleteById(id);
-            return true;
-        }
-        return false;
+        if (!cartRepository.existsById(id)) return false;
+
+        cartRepository.deleteById(id);
+        return true;
     }
 }

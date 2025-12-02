@@ -1,6 +1,9 @@
 package com.example.apigateway.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,12 +13,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Request for user registration")
+@Schema(description = "Request body for user registration")
 public class RegisterRequest {
 
-    @Schema(description = "User email address", example = "string", defaultValue = "string", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank
+    @Email
+    @Schema(description = "User email address", example = "user@example.com")
     private String email;
 
-    @Schema(description = "User password (minimum 8 characters)", example = "string", defaultValue = "string", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    @Schema(description = "User password", example = "mypassword123")
     private String password;
 }
