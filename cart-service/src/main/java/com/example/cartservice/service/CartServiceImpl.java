@@ -3,21 +3,29 @@ package com.example.cartservice.service;
 import com.example.cartservice.dto.AddToCartRequest;
 import com.example.cartservice.dto.AddToCartResponse;
 import com.example.cartservice.dto.GetCartResponse;
-import lombok.RequiredArgsConstructor;
+import com.example.cartservice.dto.GetProductResponse;
 import com.example.cartservice.model.Cart;
+import com.example.cartservice.repository.CartRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.example.cartservice.repository.CartRepository;
+import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
+
+    private final RestTemplate restTemplate;
+
+    @Value("${product.service.base-url}")
+    private String productServiceUrl;
 
     @Override
     public AddToCartResponse addToCart(String memberId, AddToCartRequest request) {
@@ -51,12 +59,24 @@ public class CartServiceImpl implements CartService {
     @Override
     public Page<GetCartResponse> getCart(String memberId, Pageable pageable) {
         return cartRepository.findByMemberId(memberId, pageable)
-                .map(cart -> new GetCartResponse(
-                        cart.getId(),
-                        cart.getMemberId(),
-                        cart.getProductId(),
-                        cart.getQty()
-                ));
+                .map(cart -> {
+                    String productUrl = productServiceUrl + "/api/product/product-detail/" + cart.getProductId();
+                    GetProductResponse product = restTemplate.getForObject(productUrl, GetProductResponse.class);
+
+                    String productName = product != null ? product.name() : "Unknown Product";
+                    BigDecimal totalPrice = product != null
+                            ? product.price().multiply(BigDecimal.valueOf(cart.getQty()))
+                            : BigDecimal.ZERO;
+
+                    return new GetCartResponse(
+                            cart.getId(),
+                            cart.getMemberId(),
+                            cart.getProductId(),
+                            productName,
+                            cart.getQty(),
+                            totalPrice
+                    );
+                });
     }
 
     @Override

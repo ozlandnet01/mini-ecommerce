@@ -44,10 +44,19 @@ public class CartGatewayController {
 
     @PostMapping("/addToCart")
     @Operation(summary = "Add product to cart")
-    public ResponseEntity<?> addToCart(@RequestBody AddToCartRequest request) {
+    public ResponseEntity<?> addToCart(@RequestBody AddToCartRequest request,
+                                       @AuthenticationPrincipal UserPrincipal principal) {
+
+        String userId = principal.getUserId();
+        URI uri = UriComponentsBuilder
+                .fromUriString(cartServiceUrl + "/api/cart/addToCart")
+                .queryParam("memberId", userId) // add memberId as query param
+                .build()
+                .toUri();
+
         try {
             return restTemplate.postForEntity(
-                    cartServiceUrl + "/api/cart/addToCart",
+                    uri,
                     request,
                     Object.class
             );

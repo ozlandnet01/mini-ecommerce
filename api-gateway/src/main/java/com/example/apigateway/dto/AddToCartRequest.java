@@ -15,10 +15,6 @@ import lombok.NoArgsConstructor;
 public class AddToCartRequest {
 
     @NotNull
-    @Schema(description = "Member ID", example = "123")
-    private String memberId;
-
-    @NotNull
     @Schema(description = "Product ID", example = "P-001")
     private String productId;
 

@@ -2,13 +2,11 @@ package com.example.productservice.model;
 
 import com.example.productservice.constant.Category;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.Instant;
+import java.math.BigDecimal;
 
 @Document(collection = "products")
 @Getter
@@ -28,5 +26,5 @@ public class Product {
 
     private Category category;
 
-    private Long price;
+    private BigDecimal price;
 }
