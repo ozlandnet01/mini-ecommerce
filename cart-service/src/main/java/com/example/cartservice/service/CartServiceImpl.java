@@ -7,6 +7,7 @@ import com.example.cartservice.dto.GetProductResponse;
 import com.example.cartservice.model.Cart;
 import com.example.cartservice.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ public class CartServiceImpl implements CartService {
     private final RestTemplate restTemplate;
 
     @Value("${product.service.base-url}")
+    @Setter
     private String productServiceUrl;
 
     @Override

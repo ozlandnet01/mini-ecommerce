@@ -24,11 +24,6 @@ public class MemberController {
 
   private final MemberService memberService;
 
-  @PostMapping("/users")
-  public ResponseEntity<MemberRegisterResponse> registerUser(@Valid @RequestBody MemberRegisterRequest request) {
-    return ResponseEntity.ok(memberService.register(request));
-  }
-
   @GetMapping("/users")
   public ResponseEntity<Page<MemberRegisterResponse>> getAllUsers(
           @RequestHeader("X-User-Id") String userId,
