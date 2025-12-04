@@ -4,6 +4,7 @@ import com.example.cartservice.dto.AddToCartRequest;
 import com.example.cartservice.dto.AddToCartResponse;
 import com.example.cartservice.dto.GetCartResponse;
 import com.example.cartservice.dto.GetProductResponse;
+import com.example.cartservice.exception.BusinessException;
 import com.example.cartservice.model.Cart;
 import com.example.cartservice.repository.CartRepository;
 import com.example.cartservice.service.CartServiceImpl;
@@ -11,7 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.data.domain.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -42,6 +45,9 @@ class CartServiceImplTest {
         String memberId = "member1";
         AddToCartRequest request = new AddToCartRequest("product1", 2);
 
+        when(restTemplate.getForObject(anyString(), eq(GetProductResponse.class)))
+                .thenReturn(new GetProductResponse("product1", "Test", "D", "CAT", BigDecimal.TEN));
+
         when(cartRepository.findByMemberIdAndProductId(memberId, "product1")).thenReturn(Optional.empty());
 
         Cart savedCart = Cart.builder()
@@ -71,6 +77,9 @@ class CartServiceImplTest {
         String memberId = "member1";
         AddToCartRequest request = new AddToCartRequest("product1", 5);
 
+        when(restTemplate.getForObject(anyString(), eq(GetProductResponse.class)))
+                .thenReturn(new GetProductResponse("product1", "Test", "D", "CAT", BigDecimal.TEN));
+
         Cart existingCart = Cart.builder()
                 .id("cart1")
                 .memberId(memberId)
@@ -80,7 +89,9 @@ class CartServiceImplTest {
                 .updatedAt(Instant.now())
                 .build();
 
-        when(cartRepository.findByMemberIdAndProductId(memberId, "product1")).thenReturn(Optional.of(existingCart));
+        when(cartRepository.findByMemberIdAndProductId(memberId, "product1"))
+                .thenReturn(Optional.of(existingCart));
+
         when(cartRepository.save(existingCart)).thenReturn(existingCart);
 
         AddToCartResponse response = cartService.addToCart(memberId, request);
@@ -88,6 +99,29 @@ class CartServiceImplTest {
         assertEquals(5, response.qty());
         verify(cartRepository).save(existingCart);
     }
+
+    @Test
+    void testAddToCart_ProductNotFound() {
+        String memberId = "member1";
+        AddToCartRequest request = new AddToCartRequest("productX", 1);
+
+        when(restTemplate.getForObject(anyString(), eq(GetProductResponse.class)))
+                .thenThrow(HttpClientErrorException.create(
+                        HttpStatus.NOT_FOUND,
+                        "Not Found",
+                        null,
+                        null,
+                        null
+                ));
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> cartService.addToCart(memberId, request)
+        );
+
+        assertEquals("PRODUCT_NOT_FOUND", ex.getCode());
+    }
+
 
     @Test
     void testGetCart() {
@@ -122,9 +156,33 @@ class CartServiceImplTest {
         GetCartResponse item = result.getContent().get(0);
         assertEquals("Laptop", item.productName());
         assertEquals(new BigDecimal("200"), item.totalPrice());
+    }
 
-        verify(cartRepository).findByMemberId(memberId, pageable);
-        verify(restTemplate).getForObject(anyString(), eq(GetProductResponse.class));
+    @Test
+    void testGetCart_ProductServiceReturnsNull() {
+        String memberId = "member1";
+
+        Cart cart1 = Cart.builder()
+                .id("cart1")
+                .memberId(memberId)
+                .productId("productX")
+                .qty(3)
+                .build();
+
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Cart> page = new PageImpl<>(java.util.List.of(cart1), pageable, 1);
+
+        when(cartRepository.findByMemberId(memberId, pageable)).thenReturn(page);
+
+        when(restTemplate.getForObject(anyString(), eq(GetProductResponse.class)))
+                .thenReturn(null);
+
+        Page<GetCartResponse> result = cartService.getCart(memberId, pageable);
+
+        GetCartResponse item = result.getContent().get(0);
+
+        assertEquals("Unknown Product", item.productName());
+        assertEquals(BigDecimal.ZERO, item.totalPrice());
     }
 
     @Test

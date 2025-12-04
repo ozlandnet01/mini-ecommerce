@@ -41,7 +41,7 @@ class MemberServiceImplTest {
 
     @Test
     void testRegisterSuccess() {
-        MemberRegisterRequest request = new MemberRegisterRequest("user@example.com", "password123");
+        MemberRegisterRequest request = new MemberRegisterRequest("User@Example.com", "password123");
 
         when(memberRepository.existsByEmail("user@example.com")).thenReturn(false);
         when(passwordEncoder.encode("password123")).thenReturn("encodedPassword");
@@ -60,7 +60,7 @@ class MemberServiceImplTest {
         MemberRegisterResponse response = memberService.register(request);
 
         assertEquals("123", response.id());
-        assertEquals("user@example.com", response.email());
+        assertEquals("user@example.com", response.email());  // normalized
 
         verify(memberRepository).existsByEmail("user@example.com");
         verify(passwordEncoder).encode("password123");
@@ -69,7 +69,7 @@ class MemberServiceImplTest {
 
     @Test
     void testRegisterEmailAlreadyUsed() {
-        MemberRegisterRequest request = new MemberRegisterRequest("user@example.com", "password123");
+        MemberRegisterRequest request = new MemberRegisterRequest("USER@example.com", "password123");
 
         when(memberRepository.existsByEmail("user@example.com")).thenReturn(true);
 
@@ -86,7 +86,7 @@ class MemberServiceImplTest {
 
     @Test
     void testLoginSuccess() {
-        LoginRequest request = new LoginRequest("user@example.com", "password123");
+        LoginRequest request = new LoginRequest("User@Example.com", "password123");
 
         Member member = Member.builder()
                 .id("123")
@@ -116,9 +116,7 @@ class MemberServiceImplTest {
 
         when(memberRepository.findByEmail("user@example.com")).thenReturn(Optional.empty());
 
-        BusinessException ex = assertThrows(BusinessException.class, () -> {
-            memberService.login(request);
-        });
+        BusinessException ex = assertThrows(BusinessException.class, () -> memberService.login(request));
 
         assertEquals("INVALID_CREDENTIALS", ex.getCode());
 
@@ -143,9 +141,7 @@ class MemberServiceImplTest {
         when(memberRepository.findByEmail("user@example.com")).thenReturn(Optional.of(member));
         when(passwordEncoder.matches("password123", "encodedPassword")).thenReturn(false);
 
-        BusinessException ex = assertThrows(BusinessException.class, () -> {
-            memberService.login(request);
-        });
+        BusinessException ex = assertThrows(BusinessException.class, () -> memberService.login(request));
 
         assertEquals("INVALID_CREDENTIALS", ex.getCode());
 

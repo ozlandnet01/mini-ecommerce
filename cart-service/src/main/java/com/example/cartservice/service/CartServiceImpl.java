@@ -4,6 +4,7 @@ import com.example.cartservice.dto.AddToCartRequest;
 import com.example.cartservice.dto.AddToCartResponse;
 import com.example.cartservice.dto.GetCartResponse;
 import com.example.cartservice.dto.GetProductResponse;
+import com.example.cartservice.exception.BusinessException;
 import com.example.cartservice.model.Cart;
 import com.example.cartservice.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -31,6 +33,17 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public AddToCartResponse addToCart(String memberId, AddToCartRequest request) {
+
+        String productUrl = productServiceUrl + "/api/product/product-detail/" + request.productId();
+
+        try {
+            GetProductResponse product = restTemplate.getForObject(productUrl, GetProductResponse.class);
+            if (product == null) {
+                throw new BusinessException("PRODUCT_NOT_FOUND", "Product not found with id: " + request.productId());
+            }
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new BusinessException("PRODUCT_NOT_FOUND", "Product not found with id: " + request.productId());
+        }
 
         Cart cart = cartRepository
                 .findByMemberIdAndProductId(memberId, request.productId())
