@@ -1,5 +1,6 @@
 package com.example.apigateway.util;
 
+import com.example.apigateway.repository.TokenRepository;
 import com.example.apigateway.security.UserPrincipal;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,9 +19,11 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final TokenRepository tokenRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, TokenRepository tokenRepository) {
         this.jwtUtil = jwtUtil;
+        this.tokenRepository = tokenRepository;
     }
 
     @Override
@@ -52,6 +55,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (!jwtUtil.validate(token)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return;
+        }
+
+        if (tokenRepository.findByToken(token).isEmpty()) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token revoked or expired");
             return;
         }
 

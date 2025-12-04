@@ -3,6 +3,8 @@ package com.example.apigateway.controller;
 import com.example.apigateway.common.ApiResponse;
 import com.example.apigateway.dto.LoginRequest;
 import com.example.apigateway.dto.RegisterRequest;
+import com.example.apigateway.model.Token;
+import com.example.apigateway.repository.TokenRepository;
 import com.example.apigateway.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 
 @Slf4j
@@ -28,13 +32,15 @@ public class AuthGatewayController {
     private final RestTemplate restTemplate;
     private final String memberServiceBaseUrl;
     private final JwtUtil jwtUtil;
+    private final TokenRepository tokenRepository;
 
     public AuthGatewayController(RestTemplate restTemplate,
                                  @Value("${member.service.base-url}") String memberServiceBaseUrl,
-                                 JwtUtil jwtUtil) {
+                                 JwtUtil jwtUtil, TokenRepository tokenRepository) {
         this.restTemplate = restTemplate;
         this.memberServiceBaseUrl = memberServiceBaseUrl;
         this.jwtUtil = jwtUtil;
+        this.tokenRepository = tokenRepository;
     }
 
     @PostMapping("/register")
@@ -67,9 +73,19 @@ public class AuthGatewayController {
         );
 
         Map<String, Object> data = response.getBody();
-
-        String userId = (String) data.get("userId");
+        String userId = (String) data.get("id");
         String token = jwtUtil.generateToken(userId, Map.of("claims", data));
+
+        Instant now = Instant.now();
+        Instant expiresAt = now.plus(Duration.ofMinutes(5));
+
+        Token userToken = new Token();
+        userToken.setToken(token);
+        userToken.setMemberId(userId);
+        userToken.setCreatedAt(now);
+        userToken.setExpiresAt(expiresAt);
+
+        tokenRepository.save(userToken);
 
         ApiResponse<?> result = ApiResponse.builder()
                 .code(response.getStatusCode().value())
