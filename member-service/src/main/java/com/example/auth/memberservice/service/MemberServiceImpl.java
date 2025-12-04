@@ -57,7 +57,7 @@ public class MemberServiceImpl implements MemberService {
         String email = request.email().toLowerCase();
 
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException("INVALID_CREDENTIALS", "Invalid email or password"));
+                .orElseThrow(() -> new BusinessException("INVALID_CREDENTIALS", "Email not exist"));
 
         if (!passwordEncoder.matches(request.password(), member.getPasswordHash())) {
             throw new BusinessException("INVALID_CREDENTIALS", "Invalid email or password");

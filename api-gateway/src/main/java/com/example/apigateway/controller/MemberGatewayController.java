@@ -1,11 +1,13 @@
 package com.example.apigateway.controller;
 
+import com.example.apigateway.common.ApiResponse;
 import com.example.apigateway.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,18 +38,24 @@ public class MemberGatewayController {
 
     @GetMapping("/currentUser")
     @Operation(summary = "Get current user")
-    public ResponseEntity<Map<String, String>> currentUser(
+    public ResponseEntity<ApiResponse<?>> currentUser(
             @AuthenticationPrincipal UserPrincipal principal) {
 
         String userId = principal.getUserId();
-        log.info("User ID: {}", userId);
 
-        return ResponseEntity.ok(Map.of("userId", userId));
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(200)
+                .status("OK")
+                .data(Map.of("userId", userId))
+                .errors(null)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     @GetMapping("/users")
     @Operation(summary = "Get all users")
-    public ResponseEntity<?> getUsers(
+    public ResponseEntity<ApiResponse<?>> getUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
@@ -59,6 +67,19 @@ public class MemberGatewayController {
                 .build()
                 .toUri();
 
-        return restTemplate.getForEntity(uri, Object.class);
+        ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
+
+        Map<String, Object> body = response.getBody() instanceof Map ? (Map<String, Object>) response.getBody() : Map.of();
+
+        Object content = body.get("content");
+
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(response.getStatusCode().value())
+                .status(HttpStatus.valueOf(response.getStatusCode().value()).name())
+                .data(content)
+                .errors(null)
+                .build();
+
+        return ResponseEntity.status(response.getStatusCode()).body(apiResponse);
     }
 }

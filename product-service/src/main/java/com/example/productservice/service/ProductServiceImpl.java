@@ -1,15 +1,14 @@
 package com.example.productservice.service;
 
 import com.example.productservice.dto.GetProductResponse;
+import com.example.productservice.exception.BusinessException;
 import com.example.productservice.model.Product;
 import com.example.productservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +35,10 @@ public class ProductServiceImpl implements ProductService {
     public GetProductResponse getProductDetail(String id) {
         return productRepository.findById(id)
                 .map(this::toResponse)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Product not found with id: " + id));
+                .orElseThrow(() -> new BusinessException(
+                        "PRODUCT_NOT_FOUND",
+                        "Product not found with id: " + id
+                ));
     }
 
     private GetProductResponse toResponse(Product product) {
